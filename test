@@ -1,0 +1,35 @@
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object({
+  language: Yup.string()
+    .oneOf(["english", "spanish", "french"], "Invalid selection") // Allowed values
+    .required("Language is required"), // Required field
+});
+
+const DropdownWithValidation = () => {
+  return (
+    <Formik
+      initialValues={{ language: "" }}
+      validationSchema={validationSchema}
+      onSubmit={(values) => console.log("Selected Language:", values.language)}
+    >
+      {({ handleSubmit }) => (
+        <Form onSubmit={handleSubmit}>
+          <label htmlFor="language">Select Language:</label>
+          <Field as="select" name="language">
+            <option value="">Choose a language</option>
+            <option value="english">English</option>
+            <option value="spanish">Spanish</option>
+            <option value="french">French</option>
+          </Field>
+          <ErrorMessage name="language" component="div" className="error" />
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
+export default DropdownWithValidation;
