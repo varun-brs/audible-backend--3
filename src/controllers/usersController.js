@@ -179,19 +179,18 @@ const loginUser = async (req, res, next) => {
     }
 
     // generate the token
-    const token = jwt.sign(
-      { userId: user._id, email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: 2592000,
-      }
-    );
+    const token = jwt.sign({ userId: user._id, email }, process.env.JWT_SECRET);
+    console.log(process.env.JWT_SECRET);
+
+    // const Token = jwt.sign({userId: user._id, email}, process.env.JWT_SECRET, {
+
+    // })
     user.token = token;
     await user.save();
 
     // our token exp time
     const expiresIn = 2592000;
-    res.status(200).json({ token, expiresIn, message: "Login Successfull" });
+    res.status(200).json({ token, message: "Login Successfull" });
     // res.status(200).json({ message: "Login Successfull" });
   } catch (error) {
     return next(error);
