@@ -51,22 +51,11 @@ app.use("/api/audiobooks", audiobooksRoute);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/// Debugging for development (Make sure to remove or disable this in production)
-if (process.env.NODE_ENV === "development") {
-  app.get("/debug-paths", (req, res) => {
-    const debug = {
-      viewsPath,
-      viewsExists: fs.existsSync(viewsPath),
-      cwd: process.cwd(),
-      dirname: __dirname,
-      viewsContents: fs.existsSync(viewsPath)
-        ? fs.readdirSync(viewsPath)
-        : "Directory not found",
-      env: process.env.NODE_ENV,
-    };
-    res.json(debug);
-  });
-}
+// Use absolute path for production
+const viewsPath =
+  process.env.NODE_ENV === "production"
+    ? "/opt/render/project/src/src/templates"
+    : path.join(__dirname, "src", "templates");
 
 app.set("views", viewsPath);
 app.set("view engine", "ejs");
