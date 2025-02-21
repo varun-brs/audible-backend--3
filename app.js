@@ -14,7 +14,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import { notFound, errHandler } from "./src/middlewares/errMiddleware.js";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 const port = process.env.PORT || 3011;
 
 // Connect to the database
