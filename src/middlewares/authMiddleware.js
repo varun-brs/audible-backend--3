@@ -15,6 +15,8 @@ const checkToken = expressAsyncHandler(async (req, res, next) => {
     token = authorizationHeader.split(" ")[1];
     console.log("token", token);
     console.log("jwt_secret", process.env.JWT_SECRET);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded token", decodedToken);
     try {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
       console.log(decodedToken, "decoded token");

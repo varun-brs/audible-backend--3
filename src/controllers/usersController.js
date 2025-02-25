@@ -14,7 +14,7 @@ const createUser = async (req, res, next) => {
   try {
     if (!first_name || !last_name || !email || !password || !role) {
       const err = new Error(
-        "Firstname, Lastname, Email,Password, role is required"
+        "Firstname, Lastname, Email, Password, and Role are required"
       );
       err.statusCode = 400;
       return next(err);
@@ -42,10 +42,28 @@ const createUser = async (req, res, next) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate token
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: "2h",
+    // Save user to DB first
+    const newUser = await User.create({
+      first_name,
+      last_name,
+      email,
+      password: hashedPassword,
+      role,
+      verify_token_expires: Date.now() + 7200000, // 2 hours
     });
+
+    // Generate token AFTER user is created
+    const token = jwt.sign(
+      { userId: newUser._id, email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2h",
+      }
+    );
+
+    // Update user with token
+    newUser.verify_token = token;
+    await newUser.save();
 
     // // Send verification email
     const verificationEmailResponse = await sendEmailVerificationLink(
@@ -62,17 +80,6 @@ const createUser = async (req, res, next) => {
       err.statusCode = 500;
       return next(err);
     }
-
-    // Save user to DB
-    await User.create({
-      first_name,
-      last_name,
-      email,
-      password: hashedPassword,
-      role,
-      verify_token: token,
-      verify_token_expires: Date.now() + 7200000, // 2 hours
-    });
 
     // Respond with success message
     res.status(201).json({
