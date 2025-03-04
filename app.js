@@ -25,7 +25,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow only your frontend
+    origin: "https://audible-backend-3.onrender.com", // Allow only your frontend
     methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
     credentials: true, // Allow cookies/auth headers
     allowedHeaders: "Content-Type,Authorization",
