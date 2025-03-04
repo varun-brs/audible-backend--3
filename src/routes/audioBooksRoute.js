@@ -9,10 +9,18 @@ import {
   getAllAudioBooks,
   getBooksByCategory,
 } from "../controllers/audioBooksController.js";
+import multer from "multer";
+const upload = multer({ dest: "src/uploads/" });
 
 const router = express.Router();
 
-router.post("/register", checkToken, createAudioBook);
+router.post(
+  "/register",
+  checkToken,
+  upload.single("book_cover_image"),
+  createAudioBook
+);
+
 router.get("/getaudiobooks", checkToken, getAudioBooks);
 router.get("/search", checkToken, searchAudioBooks);
 router.patch("/editaudiobooks/:id", checkToken, updateAudioBook);

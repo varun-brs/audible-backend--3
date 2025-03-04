@@ -1,47 +1,60 @@
 import AudioBook from "../models/audioBooksModel.js";
 import User from "../models/usersModel.js";
+// import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 
+// Fix for ES Modules __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Multer Configuration for Image Upload
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, "src/uploads"));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// Updated createAudioBook API with File Upload
 const createAudioBook = async (req, res, next) => {
-  const { book_name, category, language, description } = req.body;
-
   try {
+    const { book_name, category, language, description } = req.body;
+
     if (!book_name || !category || !language) {
-      const err = new Error("book_name, category, language is required");
-      err.statusCode = 400;
-      return next(err);
+      return res
+        .status(400)
+        .json({ message: "book_name, category, and language are required" });
     }
 
     const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      const err = new Error("User not found");
-      err.statusCode = 404;
-      return next(err);
-    }
-
-    // Save Audio_Book to DB
-    await AudioBook.create({
+    // Get the uploaded file path
+    // let book_cover_url = req.file ? `/uploads/${req.file.filename}` : null;
+    // console.log(book_cover_url);
+    // Save audiobook to DB
+    const newAudioBook = await AudioBook.create({
       book_name,
       category,
       language,
       description,
+      // book_cover_url,
       author_first_name: user.first_name,
       author_id: user._id,
     });
 
-    // const audiobook = {
-    //   book_name,
-    //   category,
-    //   language,
-    //   author_first_name: user.first_name,
-    //   author_id: user._id,
-    // };
-
     res.status(201).json({
       message: "Your Audio Book Created Successfully",
+      audiobook: newAudioBook,
     });
   } catch (error) {
-    return next(error);
+    next(error);
   }
 };
 

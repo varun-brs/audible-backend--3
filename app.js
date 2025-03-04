@@ -1,5 +1,6 @@
 import express from "express";
 import connectDB from "./src/config/db.js";
+// import multer from "multer";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRoute from "./src/routes/usersRoute.js";
@@ -22,16 +23,16 @@ await connectDB();
 
 const app = express();
 
-// app.use(
-//   cors({
-//     origin: "https://audible-frontend-s0x8.onrender.com", // Allow only your frontend
-//     methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-//     credentials: true, // Allow cookies/auth headers
-//     allowedHeaders: "Content-Type,Authorization",
-//   })
-// );
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow only your frontend
+    methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+    credentials: true, // Allow cookies/auth headers
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 
-app.use(cors());
+// app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,16 +41,41 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+// Fix for ES modules __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
+console.log(path.join(__dirname, "src/uploads"));
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, "src", "uploads"));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// app.post("/single", upload.single("image"), async (req, res) => {
+//   try {
+//     const { path, filename } = req.file;
+//     const image = await Image({ path, filename });
+//     console.log(image);
+//     await image.save();
+//     res.send({ msg: "image uploaded" });
+//   } catch (error) {
+//     res.send({ error: "Unable to upload image" });
+//   }
+// });
+
 app.use("/api/users", userRoute);
 app.use("/api/languages", languageRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/filters", filterRoute);
 app.use("/api/authors", authorRoute);
 app.use("/api/audiobooks", audiobooksRoute);
-
-// Fix for ES modules __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Use absolute path for production
 const viewsPath =

@@ -9,21 +9,21 @@ import expressAsyncHandler from "express-async-handler";
 const checkToken = expressAsyncHandler(async (req, res, next) => {
   let token;
   const authorizationHeader = req.headers.authorization;
-  console.log("req.headers.auth", req.headers.authorization);
+  // console.log("req.headers.auth", req.headers.authorization);
 
   if (authorizationHeader && authorizationHeader.startsWith("Bearer")) {
     token = authorizationHeader.split(" ")[1];
-    console.log("token", token);
-    console.log("jwt_secret", process.env.JWT_SECRET);
+    // console.log("token", token);
+    // console.log("jwt_secret", process.env.JWT_SECRET);
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decoded token", decodedToken);
+    // console.log("decoded token", decodedToken);
     try {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-      console.log(decodedToken, "decoded token");
+      // console.log(decodedToken, "decoded token");
 
       // Check if user exists in the database
       const user = await User.findById(decodedToken.userId).select("-password");
-      console.log(user);
+      // console.log(user);
 
       if (!user) {
         res.status(404);
