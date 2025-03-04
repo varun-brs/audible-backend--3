@@ -23,16 +23,16 @@ await connectDB();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://audible-backend-3.onrender.com", // Allow only your frontend
-    methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-    credentials: true, // Allow cookies/auth headers
-    allowedHeaders: "Content-Type,Authorization",
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://audible-backend-3.onrender.com", // Allow only your frontend
+//     methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+//     credentials: true, // Allow cookies/auth headers
+//     allowedHeaders: "Content-Type,Authorization",
+//   })
+// );
 
-// app.use(cors());
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
